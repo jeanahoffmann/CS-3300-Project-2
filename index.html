@@ -4,21 +4,56 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://d3js.org/topojson.v3.min.js"></script>
   <style>
+    .zip {
+      fill: #ddd;
+      stroke: black;
+    }
+
+    .mesh {
+      stroke: white;
+      stroke-width: 1px;
+    }
   </style>
 </head>
 
 <body>
-  <p>CS 3300 Project 2: Simon Tian, Colin Wu, and Jeana Hoffmann</h3>
-    <svg id="map" height="400" width="400"></svg>
-    <script>
-      let svg = d3.select('svg');
-      const height = svg.attr('height');
-      const width = svg.attr('width');
+  <h3>CS 3300 Project 2: Simon Tian, Colin Wu, and Jeana Hoffmann</h3>
+  <svg id="choropleth" height="800" width="1000"></svg>
+  <ul id="legend"></ul>
+  <script>
+    let choropleth = d3.select('svg#choropleth');
+    const mapHeight = choropleth.attr('height');
+    const mapWidth = choropleth.attr('width');
 
-      const request = async function () {
-      }
-      request();
-    </script>
+    const requestChoropleth = async function () {
+      // let nycrashes = await d3.csv('data/2M Location Collisions.csv', d3.autoType);
+      // console.log(nycrashes);
+
+      let nyc = await d3.json('data/nyc_zips.topo.json');
+      console.log(nyc);
+      let zips = topojson.feature(nyc, nyc.objects["nyc-zip-code-tabulation-areas-polygons"]);
+      let zipsMesh = topojson.feature(nyc, nyc.objects["nyc-zip-code-tabulation-areas-polygons"]);
+      let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], zips);
+      let path = d3.geoPath().projection(projection);
+
+      let colors = ["#4f0018", "#940f00", "#d43100", "#ff9100", "#ffe75e"];
+      //let crashes = ;
+      //let colorScale = d3.scaleQuantile(colors).domain(crashes);
+
+      let map = choropleth.append('g');
+      map.selectAll("path.zip")
+        .data(zips.features)
+        .join("path")
+        .attr('class', 'zip')
+        .attr("d", path);
+
+
+
+
+
+    }
+    requestChoropleth();
+  </script>
 
 </body>
 
