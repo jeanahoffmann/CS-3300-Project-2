@@ -7,11 +7,8 @@
     .zip {
       fill: #ddd;
       stroke: black;
-    }
-
-    .mesh {
-      stroke: white;
       stroke-width: 1px;
+
     }
   </style>
 </head>
@@ -32,7 +29,7 @@
       let nyc = await d3.json('data/nyc_zips.topo.json');
       console.log(nyc);
       let zips = topojson.feature(nyc, nyc.objects["nyc-zip-code-tabulation-areas-polygons"]);
-      let zipsMesh = topojson.feature(nyc, nyc.objects["nyc-zip-code-tabulation-areas-polygons"]);
+      let zipsMesh = topojson.mesh(nyc, nyc.objects["nyc-zip-code-tabulation-areas-polygons"]);
       let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], zips);
       let path = d3.geoPath().projection(projection);
 
@@ -46,6 +43,9 @@
         .join("path")
         .attr('class', 'zip')
         .attr("d", path);
+
+
+
 
 
 
