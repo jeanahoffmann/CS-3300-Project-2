@@ -5,7 +5,7 @@
   <script src="https://d3js.org/topojson.v3.min.js"></script>
   <style>
     .zip {
-      fill: #ddd;
+      /* fill: #ddd; */
       stroke: black;
       stroke-width: 1px;
 
@@ -27,22 +27,31 @@
       // console.log(nycrashes);
 
       let nyc = await d3.json('data/nyc_zips.topo.json');
+      let crashData = await d3.csv('data/zip_crashes.csv', d3.autoType);
       console.log(nyc);
+      console.log(crashData);
+
       let zips = topojson.feature(nyc, nyc.objects["nyc-zip-code-tabulation-areas-polygons"]);
       let zipsMesh = topojson.mesh(nyc, nyc.objects["nyc-zip-code-tabulation-areas-polygons"]);
       let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], zips);
       let path = d3.geoPath().projection(projection);
 
       let colors = ["#4f0018", "#940f00", "#d43100", "#ff9100", "#ffe75e"];
-      //let crashes = ;
-      //let colorScale = d3.scaleQuantile(colors).domain(crashes);
+      crashData.forEach(d => {
+        d["ZIP CODE"] = Math.floor(d)
+      });
+      crashExtent = d3.extent(crashData, d => d['CRASHES'])
+      let colorScale = d3.scaleQuantile(colors).domain(crashExtent);
 
       let map = choropleth.append('g');
       map.selectAll("path.zip")
         .data(zips.features)
         .join("path")
         .attr('class', 'zip')
-        .attr("d", path);
+        .attr("d", path)
+        .data(crashData)
+        .attr('fill', d => colorScale(d['CRASHES']));
+
 
 
 
