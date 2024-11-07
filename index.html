@@ -23,9 +23,6 @@
     const mapWidth = choropleth.attr('width');
 
     const requestChoropleth = async function () {
-      // let nycrashes = await d3.csv('data/2M Location Collisions.csv', d3.autoType);
-      // console.log(nycrashes);
-
       let nyc = await d3.json('data/nyc_zips.topo.json');
       let crashData = await d3.csv('data/zip_crashes.csv', d3.autoType);
       console.log(nyc);
@@ -37,28 +34,22 @@
       let path = d3.geoPath().projection(projection);
 
       let colors = ["#4f0018", "#940f00", "#d43100", "#ff9100", "#ffe75e"];
-      crashData.forEach(d => {
-        d["ZIP CODE"] = Math.floor(d)
-      });
-      crashExtent = d3.extent(crashData, d => d['CRASHES'])
+      crashExtent = d3.extent(crashData, d => d['CRASHES']);
       let colorScale = d3.scaleQuantile(colors).domain(crashExtent);
 
+      let crashMap = {};
+      crashData.forEach(function (d) {
+        crashMap[d['ZIP CODE']] = d['CRASHES'];
+      });
+
+
       let map = choropleth.append('g');
-      map.selectAll("path.zip")
+      map.selectAll('path.zip').filter((d) => d.uniqueId === 12345)
         .data(zips.features)
         .join("path")
         .attr('class', 'zip')
-        .attr("d", path)
-        .data(crashData)
-        .attr('fill', d => colorScale(d['CRASHES']));
-
-
-
-
-
-
-
-
+        .attr('fill', d => colorScale(crashMap[d.properties['postalCode']]))
+        .attr("d", path);
 
     }
     requestChoropleth();
