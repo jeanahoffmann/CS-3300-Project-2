@@ -33,7 +33,8 @@
       let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], zips);
       let path = d3.geoPath().projection(projection);
 
-      let colors = ["#4f0018", "#940f00", "#d43100", "#ff9100", "#ffe75e"];
+      plasma = d3.interpolatePlasma
+      let colors = [plasma(0), plasma(0.25), plasma(0.5), plasma(0.75), plasma(1)];
       crashExtent = d3.extent(crashData, d => d['CRASHES']);
       let colorScale = d3.scaleQuantile(colors).domain(crashExtent);
 
