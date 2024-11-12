@@ -4,6 +4,31 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://d3js.org/topojson.v3.min.js"></script>
   <style>
+    * {
+      font-family: "Inter", sans-serif;
+    }
+
+    body {
+      margin-top: 40px;
+      background-color: black;
+      color: white;
+    }
+
+    h3 {
+      margin-top: 40px;
+    }
+
+    .myCircle:hover {
+      stroke: black;
+    }
+
+    .gridlines .domain {
+      display: none;
+    }
+
+    .gridlines line {
+      stroke: #aaa;
+    }
   </style>
 </head>
 
@@ -42,29 +67,40 @@
       map.selectAll('path.zip').filter((d) => d.uniqueId === 12345)
         .data(zips.features)
         .join("path")
-        .attr("stroke", "black")
-        .attr('stroke-width', 1)
         .attr('fill', d => colorScale(crashMap[d.properties['postalCode']]))
         .attr("d", path)
         .on('mouseover', mouseEntersZip)
         .on('mouseout', mouseLeavesZip);
 
+      map.append('path')
+        .datum(zipsMesh)
+        .attr('class', 'outline')
+        .attr('fill', 'none')
+        .attr('stroke', 'black')
+        .attr('stroke-width', 1)
+        .attr('d', path);
+
+      let momesh = map.append("path")
+        .attr("class", "outline")
+        .attr('fill', 'none')
+        .style("stroke", "white")
+        .style("stroke-width", 3)
+        .attr("d", "");
+
       function mouseEntersZip() {
         let zip = d3.select(this);
+        zipID = zip.datum().id
 
-        zip.attr("stroke", "black")
-          .attr("stroke-width", 3);
+        var mo = topojson.mesh(nyc, nyc.objects["nyc-zip-code-tabulation-areas-polygons"], function (a, b) { return a.id === zipID || b.id === zipID; });
+        //  Then apply it to your special mesh that's on top of everything else (added earlier in this file)
+        momesh.datum(mo).attr("d", path)
       }
       function mouseLeavesZip() {
         let zip = d3.select(this);
 
-        zip.attr("stroke", "black")
-          .attr("stroke-width", 1);
-
+        momesh.attr("d", "");
       }
-
     }
-
 
     requestChoropleth();
   </script>
