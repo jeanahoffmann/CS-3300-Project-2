@@ -4,12 +4,6 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://d3js.org/topojson.v3.min.js"></script>
   <style>
-    .zip {
-      /* fill: #ddd; */
-      stroke: black;
-      stroke-width: 1px;
-
-    }
   </style>
 </head>
 
@@ -48,11 +42,30 @@
       map.selectAll('path.zip').filter((d) => d.uniqueId === 12345)
         .data(zips.features)
         .join("path")
-        .attr('class', 'zip')
+        .attr("stroke", "black")
+        .attr('stroke-width', 1)
         .attr('fill', d => colorScale(crashMap[d.properties['postalCode']]))
-        .attr("d", path);
+        .attr("d", path)
+        .on('mouseover', mouseEntersZip)
+        .on('mouseout', mouseLeavesZip);
+
+      function mouseEntersZip() {
+        let zip = d3.select(this);
+
+        zip.attr("stroke", "black")
+          .attr("stroke-width", 3);
+      }
+      function mouseLeavesZip() {
+        let zip = d3.select(this);
+
+        zip.attr("stroke", "black")
+          .attr("stroke-width", 1);
+
+      }
 
     }
+
+
     requestChoropleth();
   </script>
 
