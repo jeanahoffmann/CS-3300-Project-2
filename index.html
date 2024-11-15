@@ -185,8 +185,7 @@
             .data([formattedData]);
 
           radarArea
-            .enter()
-            .append("path")
+            .join("path")
             .attr("class", "radar-chart-area")
             .merge(radarArea)
             .transition()
