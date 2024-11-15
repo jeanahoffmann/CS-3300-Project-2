@@ -54,6 +54,7 @@
   <ul id="legend"></ul>
 
   <script>
+    // Generalized code for creating a radar chart, takes in container id to generate the chart in and formatted data
     function createRadarChart(container, data) {
       // Select the container and append an SVG for this radar chart
       const svg = d3.select(`svg#${container}`);
@@ -63,7 +64,7 @@
       const features = Object.keys(Object.values(data)[0]);
 
       // Set dimensions and center coordinates
-      const radius = Math.min(width, height) / 2 - 50;
+      const radius = Math.min(width, height) / 2 - 80;
       const centerX = width / 2,
         centerY = height / 2;
 
@@ -181,6 +182,7 @@
       function updateRadar(key) {
         let dataPoint = data[key];
 
+        // Display no polygon if there is no data
         if (!dataPoint) {
           dataPoint = {};
         }
@@ -197,7 +199,6 @@
         radarArea
           .join("path")
           .attr("class", "radar-chart-area")
-          .merge(radarArea)
           .transition()
           .duration(750)
           .attr("d", radarLine)
