@@ -155,11 +155,11 @@
             .style("fill", "white")
             .attr(
               "x",
-              (d, i) => (radius + 20) * Math.cos(angleSlice * i - Math.PI / 2)
+              (d, i) => (radius + 25) * Math.cos(angleSlice * i - Math.PI / 2)
             )
             .attr(
               "y",
-              (d, i) => (radius + 20) * Math.sin(angleSlice * i - Math.PI / 2)
+              (d, i) => (radius + 25) * Math.sin(angleSlice * i - Math.PI / 2)
             )
             .text(d => d)
             .style("font-size", "11px");
@@ -191,7 +191,7 @@
             .transition()
             .duration(750)
             .attr("d", radarLine)
-            .style("fill", "steelblue")
+            .style("fill", "lightblue")
             .style("stroke", "blue")
             .style("fill-opacity", 0.5);
         }
