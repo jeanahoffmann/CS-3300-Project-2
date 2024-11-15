@@ -28,16 +28,18 @@
       .gridlines line {
         stroke: #aaa;
       }
+
+      div#dashboard {
+        display: flex;
+      }
     </style>
   </head>
 
   <body>
     <h3>CS 3300 Project 2: Simon Tian, Colin Wu, and Jeana Hoffmann</h3>
-    <div>
-      <svg id="choropleth" height="800" width="1000"></svg>
-    </div>
-    <div>
-      <svg id="spiderPlot" width="500" height="500"></svg>
+    <div id = "dashboard">
+      <svg id="choropleth" height="800" width="900"></svg>
+      <svg id="spiderPlot" width="450" height="450"></svg>
     </div>
     <ul id="legend"></ul>
 
@@ -95,7 +97,7 @@
             axisGrid
               .append("circle")
               .attr("class", "grid-circle")
-              .attr("r", (radius / numLevels) * level)
+              .attr("r", levelRadius)
               .style("fill", "#CDCDCD")
               .style("stroke", "#CDCDCD")
               .style("fill-opacity", 0.1);
@@ -197,7 +199,7 @@
 
         // Initial drawing of axes and the first data point
         drawAxes();
-        updateRadar(); // Initialize with the first key in the data
+        updateRadar();
 
         // Return the updateRadar function for external access
         return { updateRadar };
@@ -205,7 +207,6 @@
     </script>
 
     <script>
-      // *** MAP ***
       let choropleth = d3.select("svg#choropleth");
       const mapHeight = choropleth.attr("height");
       const mapWidth = choropleth.attr("width");
@@ -224,8 +225,6 @@
             return [zipCode, rest];
           })
         );
-
-        console.log(factorDict);
 
         const factorChart = createRadarChart("spiderPlot", factorDict);
 
@@ -304,7 +303,7 @@
           let zip = d3.select(this);
 
           momesh.attr("d", "");
-          factorChart.updateRadar(undefined);
+          factorChart.updateRadar();
         }
       };
 
