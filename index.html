@@ -2,6 +2,12 @@
   <head>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://d3js.org/topojson.v3.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
     <style>
       * {
         font-family: "Inter", sans-serif;
@@ -31,6 +37,10 @@
 
       div#dashboard {
         display: flex;
+      }
+      .tooltip text {
+        font-family: "Inter";
+        font-size: 12;
       }
     </style>
   </head>
@@ -283,7 +293,7 @@
           .style("stroke-width", 3);
 
         let tooltipWidth = 120;
-        let tooltipHeight = 40;
+        let tooltipHeight = 50;
 
         let tooltip = map
           .append("g")
@@ -292,7 +302,7 @@
         tooltip
           .append("rect")
           .attr("fill", "black")
-          .attr("opacity", 0.9)
+          .attr("opacity", 0.8)
           .attr("x", -tooltipWidth / 2.0)
           .attr("y", 0)
           .attr("rx", 10)
@@ -305,14 +315,14 @@
           .attr("text-anchor", "middle")
           .attr("alignment-baseline", "hanging")
           .attr("x", 0)
-          .attr("y", 2);
+          .attr("y", 8);
         let txt2 = tooltip
           .append("text")
           .attr("fill", "white")
           .attr("text-anchor", "middle")
           .attr("alignment-baseline", "hanging")
           .attr("x", 0)
-          .attr("y", 22);
+          .attr("y", 28);
 
         function mouseEntersZip() {
           let zip = d3.select(this);
