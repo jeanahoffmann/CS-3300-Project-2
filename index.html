@@ -44,7 +44,6 @@
     <ul id="legend"></ul>
 
     <script>
-
       // Generalized code for creating a radar chart, takes in container id to generate the chart in and formatted data
       function createRadarChart(container, data) {
         // Select the container and append an SVG for this radar chart
@@ -283,6 +282,38 @@
           .style("stroke", "white")
           .style("stroke-width", 3);
 
+        let tooltipWidth = 120;
+        let tooltipHeight = 40;
+
+        let tooltip = map
+          .append("g")
+          .attr("class", "tooltip")
+          .attr("visibility", "hidden");
+        tooltip
+          .append("rect")
+          .attr("fill", "black")
+          .attr("opacity", 0.9)
+          .attr("x", -tooltipWidth / 2.0)
+          .attr("y", 0)
+          .attr("rx", 10)
+          .attr("ry", 10)
+          .attr("width", tooltipWidth)
+          .attr("height", tooltipHeight);
+        let txt = tooltip
+          .append("text")
+          .attr("fill", "white")
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "hanging")
+          .attr("x", 0)
+          .attr("y", 2);
+        let txt2 = tooltip
+          .append("text")
+          .attr("fill", "white")
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "hanging")
+          .attr("x", 0)
+          .attr("y", 22);
+
         function mouseEntersZip() {
           let zip = d3.select(this);
 
@@ -297,10 +328,21 @@
           );
           //  Then apply it to your special mesh that's on top of everything else (added earlier in this file)
           momesh.datum(mo).attr("d", path);
-          zip_code = zip.datum().properties.postalCode;
-          factorChart.updateRadar(zip_code);
+          zipCode = zip.datum().properties.postalCode;
+          factorChart.updateRadar(zipCode);
+
+          tooltip.style("visibility", "visible");
+          let bounds = path.bounds(zip.datum());
+
+          let xPos = (bounds[0][0] + bounds[1][0]) / 2.0;
+          let yPos = bounds[1][1];
+
+          tooltip.attr("transform", `translate(${xPos},${yPos})`);
+          txt.text(`Zip: ${zipCode}`);
         }
+
         function mouseLeavesZip() {
+          tooltip.style("visibility", "hidden");
           let zip = d3.select(this);
 
           momesh.attr("d", "");
