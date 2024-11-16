@@ -236,6 +236,8 @@
         if (zip !== undefined) {
           let projection = d3.geoMercator().fitSize([zipWidth, zipHeight], zips.features[zipsMap[zip]].geometry);
           let path = d3.geoPath().projection(projection);
+
+          // Add path of zip code
           map.selectAll("path")
             .data([zips.features[zipsMap[zip]]])
             .join("path")
@@ -243,7 +245,7 @@
             .style('stroke-width', 2)
             .attr("d", path);
 
-
+          // Add circles to map
           const lonExtent = d3.extent(data[zip]["LONGITUDE"], d => Number(d));
           const lonScale = d3.scaleLinear()
             .domain(lonExtent)
@@ -260,7 +262,7 @@
             .attr('cy', (d, i) => latScale(d['LATITUDE'][i]))
             .attr('r', 1)
             .style('fill', "red")
-            .style('opacity', 0.1);
+            .style('opacity', 0.5);
         }
 
 
