@@ -402,13 +402,13 @@
       function mouseEntersZip() {
         let zip = d3.select(this);
 
-        zipID = zip.datum().id;
+        zipID = zip.datum().properties["OBJECTID"];
 
         var mo = topojson.mesh(
           nyc,
           nyc.objects.collection,
           function (a, b) {
-            return a.id === zipID || b.id === zipID;
+            return a.properties["OBJECTID"] === zipID || b.properties["OBJECTID"] === zipID;
           }
         );
         //  Then apply it to your special mesh that's on top of everything else (added earlier in this file)
