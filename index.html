@@ -1,367 +1,445 @@
 <html>
-  <head>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://d3js.org/topojson.v3.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        font-family: "Inter", sans-serif;
-      }
 
-      body {
-        margin-top: 40px;
-        background-color: black;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+<head>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/topojson.v3.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet" />
+  <style>
+    * {
+      font-family: "Inter", sans-serif;
+    }
 
-      .myCircle:hover {
-        stroke: black;
-      }
+    body {
+      margin-top: 40px;
+      background-color: black;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-      .gridlines .domain {
-        display: none;
-      }
+    .myCircle:hover {
+      stroke: black;
+    }
 
-      .gridlines line {
-        stroke: #aaa;
-      }
+    .gridlines .domain {
+      display: none;
+    }
 
-      div#dashboard {
-        display: flex;
-      }
-      .tooltip text {
-        font-family: "Inter";
-        font-size: 12;
-      }
-    </style>
-  </head>
+    .gridlines line {
+      stroke: #aaa;
+    }
 
-  <body>
-    <h1>NYC Car Crashes</h1>
-    <h3>CS 3300 Project 2: Simon Tian, Colin Wu, and Jeana Hoffmann</h3>
-    <div id="dashboard">
-      <svg id="choropleth" height="800" width="900"></svg>
-      <svg id="spiderPlot" width="450" height="450"></svg>
-    </div>
-    <ul id="legend"></ul>
+    div#dashboard {
+      display: flex;
+    }
 
-    <script>
-      // Generalized code for creating a radar chart, takes in container id to generate the chart in and formatted data
-      function createRadarChart(container, data) {
-        // Select the container and append an SVG for this radar chart
-        const svg = d3.select(`svg#${container}`);
-        const width = svg.attr("width");
-        const height = svg.attr("height");
+    .tooltip text {
+      font-family: "Inter";
+      font-size: 12;
+    }
 
-        const features = Object.keys(Object.values(data)[0]);
+    .outline {
+      fill: none;
+      stroke: black;
+      stroke-width: 1px;
+    }
+  </style>
+</head>
 
-        // Set dimensions and center coordinates
-        const radius = Math.min(width, height) / 2 - 80;
-        const centerX = width / 2,
-          centerY = height / 2;
+<body>
+  <h1>NYC Car Crashes</h1>
+  <h3>CS 3300 Project 2: Simon Tian, Colin Wu, and Jeana Hoffmann</h3>
+  <div id="dashboard">
+    <svg id="choropleth" height="800" width="900"></svg>
+    <svg id="spiderPlot" width="450" height="450"></svg>
+  </div>
+  <div>
+    <svg id="zipcode" width="300" height="300"></svg>
+  </div>
 
-        // Calculate the maximum value for each feature across the dataset
-        const maxValues = {};
-        features.forEach(feature => {
-          maxValues[feature] = d3.max(Object.values(data), d => d[feature]);
-        });
+  <ul id="legend"></ul>
 
-        // Create a specific scale for each feature based on its maximum value
-        const scales = {};
-        features.forEach(feature => {
-          scales[feature] = d3
-            .scaleLinear()
-            .range([0, radius])
-            .domain([0, maxValues[feature]]);
-        });
+  <script>
+    // Generalized code for creating a radar chart, takes in container id to generate the chart in and formatted data
+    function createRadarChart(container, data) {
+      // Select the container and append an SVG for this radar chart
+      const svg = d3.select(`svg#${container}`);
+      const width = svg.attr("width");
+      const height = svg.attr("height");
 
-        // Angle for each feature axis
-        const angleSlice = (Math.PI * 2) / features.length;
+      const features = Object.keys(Object.values(data)[0]);
 
-        // Radar line generator function
-        const radarLine = d3
-          .lineRadial()
-          .radius(d => scales[d.feature](d.value)) // Use feature-specific scale
-          .angle((d, i) => i * angleSlice)
-          .curve(d3.curveLinearClosed);
+      // Set dimensions and center coordinates
+      const radius = Math.min(width, height) / 2 - 80;
+      const centerX = width / 2,
+        centerY = height / 2;
 
-        const radarGroup = svg
-          .append("g")
-          .attr("transform", `translate(${centerX}, ${centerY})`);
+      // Calculate the maximum value for each feature across the dataset
+      const maxValues = {};
+      features.forEach(feature => {
+        maxValues[feature] = d3.max(Object.values(data), d => d[feature]);
+      });
 
-        // Draw grid and axes
-        function drawAxes() {
-          const axisGrid = radarGroup.append("g").attr("class", "axisWrapper");
+      // Create a specific scale for each feature based on its maximum value
+      const scales = {};
+      features.forEach(feature => {
+        scales[feature] = d3
+          .scaleLinear()
+          .range([0, radius])
+          .domain([0, maxValues[feature]]);
+      });
 
-          const numLevels = 5;
-          for (let level = 1; level <= numLevels; level++) {
-            const levelRadius = (radius / numLevels) * level;
+      // Angle for each feature axis
+      const angleSlice = (Math.PI * 2) / features.length;
 
+      // Radar line generator function
+      const radarLine = d3
+        .lineRadial()
+        .radius(d => scales[d.feature](d.value)) // Use feature-specific scale
+        .angle((d, i) => i * angleSlice)
+        .curve(d3.curveLinearClosed);
+
+      const radarGroup = svg
+        .append("g")
+        .attr("transform", `translate(${centerX}, ${centerY})`);
+
+      // Draw grid and axes
+      function drawAxes() {
+        const axisGrid = radarGroup.append("g").attr("class", "axisWrapper");
+
+        const numLevels = 5;
+        for (let level = 1; level <= numLevels; level++) {
+          const levelRadius = (radius / numLevels) * level;
+
+          axisGrid
+            .append("circle")
+            .attr("class", "grid-circle")
+            .attr("r", levelRadius)
+            .style("fill", "#CDCDCD")
+            .style("stroke", "#CDCDCD")
+            .style("fill-opacity", 0.1);
+
+          features.forEach((feature, i) => {
+            const featureMax = maxValues[feature]; // Maximum value for the feature
+            const scale = scales[feature]; // Scale for this feature
+
+            // Calculate the value for this ring level for this feature
+            const ringValue = Math.round((featureMax / numLevels) * level);
+
+            // Position the label on the ring at the correct angle for the feature
             axisGrid
-              .append("circle")
-              .attr("class", "grid-circle")
-              .attr("r", levelRadius)
-              .style("fill", "#CDCDCD")
-              .style("stroke", "#CDCDCD")
-              .style("fill-opacity", 0.1);
-
-            features.forEach((feature, i) => {
-              const featureMax = maxValues[feature]; // Maximum value for the feature
-              const scale = scales[feature]; // Scale for this feature
-
-              // Calculate the value for this ring level for this feature
-              const ringValue = Math.round((featureMax / numLevels) * level);
-
-              // Position the label on the ring at the correct angle for the feature
-              axisGrid
-                .append("text")
-                .attr("class", "ring-label")
-                .attr("x", levelRadius * Math.cos(angleSlice * i - Math.PI / 2))
-                .attr("y", levelRadius * Math.sin(angleSlice * i - Math.PI / 2))
-                .attr("dy", "0.35em")
-                .style("font-size", "10px")
-                .style("fill", "white")
-                .style("text-anchor", "middle")
-                .text(ringValue); // Set label text to the calculated ring value
-            });
-          }
-
-          const axis = axisGrid
-            .selectAll(".axis")
-            .data(features)
-            .enter()
-            .append("g")
-            .attr("class", "axis");
-
-          axis
-            .append("line")
-            .attr("x1", 0)
-            .attr("y1", 0)
-            .attr(
-              "x2",
-              (d, i) =>
-                scales[d](maxValues[d]) * Math.cos(angleSlice * i - Math.PI / 2)
-            )
-            .attr(
-              "y2",
-              (d, i) =>
-                scales[d](maxValues[d]) * Math.sin(angleSlice * i - Math.PI / 2)
-            )
-            .style("stroke", "grey")
-            .style("stroke-width", "2px");
-
-          axis
-            .append("text")
-            .attr("class", "legend")
-            .attr("text-anchor", "middle")
-            .attr("dy", "0.35em")
-            .style("fill", "white")
-            .attr(
-              "x",
-              (d, i) => (radius + 25) * Math.cos(angleSlice * i - Math.PI / 2)
-            )
-            .attr(
-              "y",
-              (d, i) => (radius + 25) * Math.sin(angleSlice * i - Math.PI / 2)
-            )
-            .text(d => d)
-            .style("font-size", "11px");
-
-          d3.selectAll(".ring-label").raise();
+              .append("text")
+              .attr("class", "ring-label")
+              .attr("x", levelRadius * Math.cos(angleSlice * i - Math.PI / 2))
+              .attr("y", levelRadius * Math.sin(angleSlice * i - Math.PI / 2))
+              .attr("dy", "0.35em")
+              .style("font-size", "10px")
+              .style("fill", "white")
+              .style("text-anchor", "middle")
+              .text(ringValue); // Set label text to the calculated ring value
+          });
         }
 
-        // Radar chart update function that takes a key to select the row
-        function updateRadar(key) {
-          let dataPoint = data[key];
-
-          // Display no polygon if there is no data
-          if (!dataPoint) {
-            dataPoint = {};
-          }
-
-          const formattedData = features.map(feature => ({
-            feature: feature,
-            value: dataPoint[feature] || 0,
-          }));
-
-          const radarArea = radarGroup
-            .selectAll(".radar-chart-area")
-            .data([formattedData]);
-
-          radarArea
-            .join("path")
-            .attr("class", "radar-chart-area")
-            .transition()
-            .duration(750)
-            .attr("d", radarLine)
-            .style("fill", "lightblue")
-            .style("stroke", "blue")
-            .style("fill-opacity", 0.5);
-        }
-
-        // Initial drawing of axes and the first data point
-        drawAxes();
-        updateRadar();
-
-        // Return the updateRadar function for external access
-        return { updateRadar };
-      }
-    </script>
-
-    <script>
-      let choropleth = d3.select("svg#choropleth");
-      const mapHeight = choropleth.attr("height");
-      const mapWidth = choropleth.attr("width");
-
-      const requestChoropleth = async function () {
-        let nyc = await d3.json("data/nyc_zips.topo.json");
-        let crashData = await d3.csv("data/zip_crashes.csv", d3.autoType);
-        let factorData = await d3.csv("data/factors.csv", d3.autoType);
-        console.log(nyc);
-        console.log(crashData);
-        console.log(factorData);
-
-        const factorDict = Object.fromEntries(
-          factorData.map(row => {
-            const { "ZIP CODE": zipCode, ...rest } = row; // Destructure to exclude "ZIP CODE"
-            return [zipCode, rest];
-          })
-        );
-
-        const factorChart = createRadarChart("spiderPlot", factorDict);
-
-        let zips = topojson.feature(
-          nyc,
-          nyc.objects["nyc-zip-code-tabulation-areas-polygons"]
-        );
-        let zipsMesh = topojson.mesh(
-          nyc,
-          nyc.objects["nyc-zip-code-tabulation-areas-polygons"]
-        );
-        let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], zips);
-        let path = d3.geoPath().projection(projection);
-
-        plasma = d3.interpolatePlasma;
-        let colors = [
-          plasma(0),
-          plasma(0.25),
-          plasma(0.5),
-          plasma(0.75),
-          plasma(1),
-        ];
-        crashExtent = d3.extent(crashData, d => d["CRASHES"]);
-        let colorScale = d3.scaleQuantile(colors).domain(crashExtent);
-
-        let crashMap = {};
-        crashData.forEach(function (d) {
-          crashMap[d["ZIP CODE"]] = d["CRASHES"];
-        });
-
-        let map = choropleth.append("g");
-        map
-          .selectAll("path.zip")
-          .filter(d => d.uniqueId === 12345)
-          .data(zips.features)
-          .join("path")
-          .attr("fill", d => colorScale(crashMap[d.properties["postalCode"]]))
-          .attr("d", path)
-          .on("mouseover", mouseEntersZip)
-          .on("mouseout", mouseLeavesZip);
-
-        map
-          .append("path")
-          .datum(zipsMesh)
-          .attr("class", "outline")
-          .attr("fill", "none")
-          .attr("stroke", "black")
-          .attr("stroke-width", 1)
-          .attr("d", path);
-
-        let momesh = map
-          .append("path")
-          .attr("class", "outline")
-          .attr("fill", "none")
-          .style("stroke", "white")
-          .style("stroke-width", 3);
-
-        let tooltipWidth = 120;
-        let tooltipHeight = 50;
-
-        let tooltip = map
+        const axis = axisGrid
+          .selectAll(".axis")
+          .data(features)
+          .enter()
           .append("g")
-          .attr("class", "tooltip")
-          .attr("visibility", "hidden");
-        tooltip
-          .append("rect")
-          .attr("fill", "black")
-          .attr("opacity", 0.8)
-          .attr("x", -tooltipWidth / 2.0)
-          .attr("y", 0)
-          .attr("rx", 10)
-          .attr("ry", 10)
-          .attr("width", tooltipWidth)
-          .attr("height", tooltipHeight);
-        let txt = tooltip
+          .attr("class", "axis");
+
+        axis
+          .append("line")
+          .attr("x1", 0)
+          .attr("y1", 0)
+          .attr(
+            "x2",
+            (d, i) =>
+              scales[d](maxValues[d]) * Math.cos(angleSlice * i - Math.PI / 2)
+          )
+          .attr(
+            "y2",
+            (d, i) =>
+              scales[d](maxValues[d]) * Math.sin(angleSlice * i - Math.PI / 2)
+          )
+          .style("stroke", "grey")
+          .style("stroke-width", "2px");
+
+        axis
           .append("text")
-          .attr("fill", "white")
+          .attr("class", "legend")
           .attr("text-anchor", "middle")
-          .attr("alignment-baseline", "hanging")
-          .attr("x", 0)
-          .attr("y", 8);
-        let txt2 = tooltip
-          .append("text")
-          .attr("fill", "white")
-          .attr("text-anchor", "middle")
-          .attr("alignment-baseline", "hanging")
-          .attr("x", 0)
-          .attr("y", 28);
+          .attr("dy", "0.35em")
+          .style("fill", "white")
+          .attr(
+            "x",
+            (d, i) => (radius + 25) * Math.cos(angleSlice * i - Math.PI / 2)
+          )
+          .attr(
+            "y",
+            (d, i) => (radius + 25) * Math.sin(angleSlice * i - Math.PI / 2)
+          )
+          .text(d => d)
+          .style("font-size", "11px");
 
-        function mouseEntersZip() {
-          let zip = d3.select(this);
+        d3.selectAll(".ring-label").raise();
+      }
 
-          zipID = zip.datum().id;
+      // Radar chart update function that takes a key to select the row
+      function updateRadar(key) {
+        let dataPoint = data[key];
 
-          var mo = topojson.mesh(
-            nyc,
-            nyc.objects["nyc-zip-code-tabulation-areas-polygons"],
-            function (a, b) {
-              return a.id === zipID || b.id === zipID;
-            }
-          );
-          //  Then apply it to your special mesh that's on top of everything else (added earlier in this file)
-          momesh.datum(mo).attr("d", path);
-          zipCode = zip.datum().properties.postalCode;
-          factorChart.updateRadar(zipCode);
-
-          tooltip.style("visibility", "visible");
-          let bounds = path.bounds(zip.datum());
-
-          let xPos = (bounds[0][0] + bounds[1][0]) / 2.0;
-          let yPos = bounds[1][1];
-
-          tooltip.attr("transform", `translate(${xPos},${yPos})`);
-          txt.text(`Zip: ${zipCode}`);
-          txt2.text(`${crashMap[zipCode]} Crashes`);
+        // Display no polygon if there is no data
+        if (!dataPoint) {
+          dataPoint = {};
         }
 
-        function mouseLeavesZip() {
-          tooltip.style("visibility", "hidden");
-          let zip = d3.select(this);
+        const formattedData = features.map(feature => ({
+          feature: feature,
+          value: dataPoint[feature] || 0,
+        }));
 
-          momesh.attr("d", "");
-          factorChart.updateRadar();
+        const radarArea = radarGroup
+          .selectAll(".radar-chart-area")
+          .data([formattedData]);
+
+        radarArea
+          .join("path")
+          .attr("class", "radar-chart-area")
+          .transition()
+          .duration(750)
+          .attr("d", radarLine)
+          .style("fill", "lightblue")
+          .style("stroke", "blue")
+          .style("fill-opacity", 0.5);
+      }
+
+      // Initial drawing of axes and the first data point
+      drawAxes();
+      updateRadar();
+
+      // Return the updateRadar function for external access
+      return { updateRadar };
+    }
+  </script>
+
+  <script>
+    function createZip(zips, data) {
+      // Select the container and append an SVG for this radar chart
+      const zipcode = d3.select("svg#zipcode");
+      const zipWidth = zipcode.attr("width");
+      const zipHeight = zipcode.attr("height");
+
+      console.log(data);
+
+      let zipsMap = {};
+      zips.features.forEach(function (d, i) {
+        zipsMap[d.properties["postalCode"]] = i;
+      });
+      console.log(zipsMap);
+      let map = zipcode.append("g");
+
+      function updateZip(zip) {
+        if (zip !== undefined) {
+          let projection = d3.geoMercator().fitSize([zipWidth, zipHeight], zips.features[zipsMap[zip]].geometry);
+          let path = d3.geoPath().projection(projection);
+
+          // Add path of zip code
+          map.selectAll("path")
+            .data([zips.features[zipsMap[zip]]])
+            .join("path")
+            .style('stroke', 'lightblue')
+            .style('stroke-width', 2)
+            .attr("d", path);
+
+          // // Add circles to map
+          // const lonExtent = d3.extent(data[zip]["LONGITUDE"], d => Number(d));
+          // const lonScale = d3.scaleLinear()
+          //   .domain(lonExtent)
+          //   .range([0, 400]);
+          // const latExtent = d3.extent(data[zip]["LATITUDE"], d => Number(d));
+          // const latScale = d3.scaleLinear()
+          //   .domain(latExtent)
+          //   .range([400, 0])
+
+          // map.selectAll('circle')
+          //   .data(data[zip])
+          //   .join('circle')
+          //   .attr('cx', (d, i) => lonScale(d["LONGITUDE"][i]))
+          //   .attr('cy', (d, i) => latScale(d['LATITUDE'][i]))
+          //   .attr('r', 1)
+          //   .style('fill', "red")
+          //   .style('opacity', 0.5);
         }
-      };
 
-      requestChoropleth();
-    </script>
-  </body>
+
+      }
+
+      // Initial drawing of axes and the first data point
+      updateZip();
+
+      return { updateZip };
+
+    }
+
+  </script>
+
+  <script>
+    let choropleth = d3.select("svg#choropleth");
+    const mapHeight = choropleth.attr("height");
+    const mapWidth = choropleth.attr("width");
+
+    const requestChoropleth = async function () {
+      let nyc = await d3.json("data/nyc_zips.topo.json");
+      let crashData = await d3.csv("data/zip_crashes.csv", d3.autoType);
+      let factorData = await d3.csv("data/factors.csv", d3.autoType);
+      console.log(nyc);
+      console.log(crashData);
+      console.log(factorData);
+
+      const factorDict = Object.fromEntries(
+        factorData.map(row => {
+          const { "ZIP CODE": zipCode, ...rest } = row; // Destructure to exclude "ZIP CODE"
+          return [zipCode, rest];
+        })
+      );
+      console.log(factorDict)
+      const zip_json = await d3.json('data/grouped_by_zips.json');
+
+      const factorChart = createRadarChart("spiderPlot", factorDict);
+
+      let zips = topojson.feature(
+        nyc,
+        nyc.objects.collection
+      );
+      console.log(zips)
+      const zipZoom = createZip(zips, zip_json);
+      let zipsMesh = topojson.mesh(
+        nyc,
+        nyc.objects.collection
+      );
+      let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], zips);
+      let path = d3.geoPath().projection(projection);
+
+      plasma = d3.interpolatePlasma;
+      let colors = [
+        plasma(0),
+        plasma(0.25),
+        plasma(0.5),
+        plasma(0.75),
+        plasma(1),
+      ];
+      crashExtent = d3.extent(crashData, d => d["CRASHES"]);
+      let colorScale = d3.scaleQuantile(colors).domain(crashExtent);
+
+      let crashMap = {};
+      crashData.forEach(function (d) {
+        crashMap[d["ZIP CODE"]] = d["CRASHES"];
+      });
+      console.log(crashData)
+
+      let map = choropleth.append("g");
+      map
+        .selectAll("path.zip")
+        .filter(d => d.uniqueId === 12345)
+        .data(zips.features)
+        .join("path")
+        .attr("fill", d => colorScale(crashMap[d.properties["postalCode"]]))
+        .attr("d", path)
+        .on("mouseover", mouseEntersZip)
+        .on("mouseout", mouseLeavesZip);
+
+      map
+        .append("path")
+        .datum(zipsMesh)
+        .attr("class", "outline")
+        .attr("d", path);
+
+      let momesh = map
+        .append("path")
+        .attr("class", "outline")
+        .attr("fill", "none")
+        .style("stroke", "white")
+        .style("stroke-width", 1)
+        .attr('d', '');
+
+      let tooltipWidth = 120;
+      let tooltipHeight = 50;
+
+      let tooltip = map
+        .append("g")
+        .attr("class", "tooltip")
+        .attr("visibility", "hidden");
+      tooltip
+        .append("rect")
+        .attr("fill", "black")
+        .attr("opacity", 0.8)
+        .attr("x", -tooltipWidth / 2.0)
+        .attr("y", 0)
+        .attr("rx", 10)
+        .attr("ry", 10)
+        .attr("width", tooltipWidth)
+        .attr("height", tooltipHeight);
+      let txt = tooltip
+        .append("text")
+        .attr("fill", "white")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "hanging")
+        .attr("x", 0)
+        .attr("y", 8);
+      let txt2 = tooltip
+        .append("text")
+        .attr("fill", "white")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "hanging")
+        .attr("x", 0)
+        .attr("y", 28);
+
+      function mouseEntersZip() {
+        let zip = d3.select(this);
+
+        zipID = zip.datum().id;
+
+        var mo = topojson.mesh(
+          nyc,
+          nyc.objects.collection,
+          function (a, b) {
+            return a.id === zipID || b.id === zipID;
+          }
+        );
+        //  Then apply it to your special mesh that's on top of everything else (added earlier in this file)
+        momesh.datum(mo).attr("d", path);
+        zipCode = zip.datum().properties.postalCode;
+        factorChart.updateRadar(zipCode);
+        zipZoom.updateZip(zipCode);
+
+        tooltip.style("visibility", "visible");
+        let bounds = path.bounds(zip.datum());
+
+        let xPos = (bounds[0][0] + bounds[1][0]) / 2.0;
+        let yPos = bounds[1][1];
+
+        tooltip.attr("transform", `translate(${xPos},${yPos})`);
+        txt.text(`Zip: ${zipCode}`);
+        txt2.text(`${crashMap[zipCode]} Crashes`);
+      }
+
+      function mouseLeavesZip() {
+        tooltip.style("visibility", "hidden");
+        let zip = d3.select(this);
+
+        momesh.attr("d", "");
+        factorChart.updateRadar();
+        zipZoom.updateZip();
+      }
+    };
+
+    requestChoropleth();
+  </script>
+</body>
+
 </html>
