@@ -256,24 +256,17 @@
             .style('stroke-width', 2)
             .attr("d", path);
 
-          // // Add circles to map
-          // const lonExtent = d3.extent(data[zip]["LONGITUDE"], d => Number(d));
-          // const lonScale = d3.scaleLinear()
-          //   .domain(lonExtent)
-          //   .range([0, 400]);
-          // const latExtent = d3.extent(data[zip]["LATITUDE"], d => Number(d));
-          // const latScale = d3.scaleLinear()
-          //   .domain(latExtent)
-          //   .range([400, 0])
+          // Add circles to maps
+          zipcode.selectAll('circle')
+            .data(data[zip]['LONGITUDE'])
+            .join('circle')
+            .attr('cx', (d, i) => projection([data[zip]['LONGITUDE'][i], data[zip]['LATITUDE'][i]])[0])
+            .attr('cy', (d, i) => projection([data[zip]['LONGITUDE'][i], data[zip]['LATITUDE'][i]])[1])
+            .attr('r', 1)
+            .style('fill', "#e600ff")
+            .style('opacity', 0.1);
 
-          // map.selectAll('circle')
-          //   .data(data[zip])
-          //   .join('circle')
-          //   .attr('cx', (d, i) => lonScale(d["LONGITUDE"][i]))
-          //   .attr('cy', (d, i) => latScale(d['LATITUDE'][i]))
-          //   .attr('r', 1)
-          //   .style('fill', "red")
-          //   .style('opacity', 0.5);
+
         }
 
 
