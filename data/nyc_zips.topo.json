@@ -1202,6 +1202,12 @@
               331,
               332,
               333
+            ],
+            [
+              -333,
+              351,
+              -350,
+              352
             ]
           ],
           "properties": {
@@ -1299,30 +1305,6 @@
             "Shape_Leng": 37082.7211777,
             "Shape_Area": 34447604.6725,
             "@id": "http://nyc.pediacities.com/Resource/PostalCode/10468"
-          }
-        },
-        {
-          "type": "Polygon",
-          "arcs": [
-            [
-              -333,
-              351,
-              -350,
-              352
-            ]
-          ],
-          "properties": {
-            "OBJECTID": 48,
-            "postalCode": 10463,
-            "PO_NAME": "Bronx",
-            "STATE": "NY",
-            "borough": "Manhattan",
-            "ST_FIPS": 36,
-            "CTY_FIPS": "061",
-            "BLDGpostalCode": 0,
-            "Shape_Leng": 7791.51712739,
-            "Shape_Area": 3119701.91325,
-            "@id": "http://nyc.pediacities.com/Resource/PostalCode/10463"
           }
         },
         {
@@ -2122,6 +2104,9 @@
           "type": "Polygon",
           "arcs": [
             [
+              532
+            ],
+            [
               525,
               526,
               527,
@@ -2168,27 +2153,6 @@
             "Shape_Leng": 20734.09171,
             "Shape_Area": 19631043.8226,
             "@id": "http://nyc.pediacities.com/Resource/PostalCode/10025"
-          }
-        },
-        {
-          "type": "Polygon",
-          "arcs": [
-            [
-              532
-            ]
-          ],
-          "properties": {
-            "OBJECTID": 80,
-            "postalCode": 10035,
-            "PO_NAME": "New York",
-            "STATE": "NY",
-            "borough": "Manhattan",
-            "ST_FIPS": 36,
-            "CTY_FIPS": "061",
-            "BLDGpostalCode": 0,
-            "Shape_Leng": 25009.7552646,
-            "Shape_Area": 23494871.4627,
-            "@id": "http://nyc.pediacities.com/Resource/PostalCode/10035"
           }
         },
         {
@@ -2548,6 +2512,9 @@
             ],
             [
               610
+            ],
+            [
+              1172
             ]
           ],
           "properties": {
@@ -2676,27 +2643,6 @@
             "Shape_Leng": 34988.0679278,
             "Shape_Area": 54680551.2195,
             "@id": "http://nyc.pediacities.com/Resource/PostalCode/11362"
-          }
-        },
-        {
-          "type": "Polygon",
-          "arcs": [
-            [
-              637
-            ]
-          ],
-          "properties": {
-            "OBJECTID": 100,
-            "postalCode": 10044,
-            "PO_NAME": "New York",
-            "STATE": "NY",
-            "borough": "Manhattan",
-            "ST_FIPS": 36,
-            "CTY_FIPS": "061",
-            "BLDGpostalCode": 0,
-            "Shape_Leng": 21449.3706442,
-            "Shape_Area": 6296113.26978,
-            "@id": "http://nyc.pediacities.com/Resource/PostalCode/10044"
           }
         },
         {
@@ -5247,27 +5193,6 @@
             "Shape_Leng": 4717.02526596,
             "Shape_Area": 958087.21122,
             "@id": "http://nyc.pediacities.com/Resource/PostalCode/10281"
-          }
-        },
-        {
-          "type": "Polygon",
-          "arcs": [
-            [
-              1172
-            ]
-          ],
-          "properties": {
-            "OBJECTID": 257,
-            "postalCode": 11370,
-            "PO_NAME": "Bronx",
-            "STATE": "NY",
-            "borough": "Bronx",
-            "ST_FIPS": 36,
-            "CTY_FIPS": "005",
-            "BLDGpostalCode": 0,
-            "Shape_Leng": 17837.7211487,
-            "Shape_Area": 18190205.187,
-            "@id": "http://nyc.pediacities.com/Resource/PostalCode/11370"
           }
         },
         {

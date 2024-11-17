@@ -230,9 +230,8 @@
   <script>
     function createZip(zips, data) {
       // Select the container and append an SVG for this radar chart
-      const zipcode = d3.select("svg#zipcode");
-      const zipWidth = zipcode.attr("width");
-      const zipHeight = zipcode.attr("height");
+      let zipcode = d3.select("svg#choropleth").append('g')
+        .attr("transform", `translate(${50}, ${50})`);
 
       console.log(data);
 
@@ -245,7 +244,7 @@
 
       function updateZip(zip) {
         if (zip !== undefined) {
-          let projection = d3.geoMercator().fitSize([zipWidth, zipHeight], zips.features[zipsMap[zip]].geometry);
+          let projection = d3.geoMercator().fitSize([300, 300], zips.features[zipsMap[zip]].geometry);
           let path = d3.geoPath().projection(projection);
 
           // Add path of zip code
