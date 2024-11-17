@@ -233,13 +233,10 @@
       let zipcode = d3.select("svg#choropleth").append('g')
         .attr("transform", `translate(${50}, ${50})`);
 
-      console.log(data);
-
       let zipsMap = {};
       zips.features.forEach(function (d, i) {
         zipsMap[d.properties["postalCode"]] = i;
       });
-      console.log(zipsMap);
       let map = zipcode.append("g");
 
       function updateZip(zip) {
@@ -257,10 +254,10 @@
 
           // Add circles to maps
           zipcode.selectAll('circle')
-            .data(data[zip]['LONGITUDE'])
+            .data(data[zip]["0"]['LONGITUDE'])
             .join('circle')
-            .attr('cx', (d, i) => projection([data[zip]['LONGITUDE'][i], data[zip]['LATITUDE'][i]])[0])
-            .attr('cy', (d, i) => projection([data[zip]['LONGITUDE'][i], data[zip]['LATITUDE'][i]])[1])
+            .attr('cx', (d, i) => projection([data[zip]["0"]['LONGITUDE'][i], data[zip]["0"]['LATITUDE'][i]])[0])
+            .attr('cy', (d, i) => projection([data[zip]["0"]['LONGITUDE'][i], data[zip]["0"]['LATITUDE'][i]])[1])
             .attr('r', 1)
             .style('fill', "#e600ff")
             .style('opacity', 0.1);
@@ -299,8 +296,7 @@
           return [zipCode, rest];
         })
       );
-      console.log(factorDict)
-      const zip_json = await d3.json('data/grouped_by_zips.json');
+      const zip_json = await d3.json('data/lat_lon.json');
 
       const factorChart = createRadarChart("spiderPlot", factorDict);
 
@@ -308,7 +304,6 @@
         nyc,
         nyc.objects.collection
       );
-      console.log(zips)
       const zipZoom = createZip(zips, zip_json);
       let zipsMesh = topojson.mesh(
         nyc,
@@ -332,7 +327,6 @@
       crashData.forEach(function (d) {
         crashMap[d["ZIP CODE"]] = d["CRASHES"];
       });
-      console.log(crashData)
 
       let map = choropleth.append("g");
       map
