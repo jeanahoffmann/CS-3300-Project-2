@@ -1,68 +1,70 @@
 <html>
-  <head>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://d3js.org/topojson.v3.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        font-family: "Inter", sans-serif;
-      }
 
-      body {
-        margin-top: 40px;
-        background-color: black;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+<head>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/topojson.v3.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet" />
+  <style>
+    * {
+      font-family: "Inter", sans-serif;
+    }
 
-      .myCircle:hover {
-        stroke: black;
-      }
+    body {
+      margin-top: 40px;
+      background-color: black;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-      .gridlines .domain {
-        display: none;
-      }
+    .myCircle:hover {
+      stroke: black;
+    }
 
-      .gridlines line {
-        stroke: #aaa;
-      }
+    .gridlines .domain {
+      display: none;
+    }
 
-      div#dashboard {
-        display: flex;
-      }
+    .gridlines line {
+      stroke: #aaa;
+    }
 
-      h3 {
-        margin-bottom: 0px;
-      }
+    div#dashboard {
+      display: flex;
+    }
 
-      .tooltip text {
-        font-family: "Inter";
-        font-size: 12;
-      }
+    h3 {
+      margin-bottom: 0px;
+    }
 
-      .outline {
-        fill: none;
-        stroke: black;
-        stroke-width: 1px;
-      }
-      .sidebar {
-        display: flex;
-        flex-direction: column;
-      }
-    </style>
-  </head>
+    .tooltip text {
+      font-family: "Inter";
+      font-size: 12;
+    }
 
-  <body>
-    <h1>NYC Car Crashes</h1>
-    <h3>CS 3300 Project 2: Simon Tian, Colin Wu, and Jeana Hoffmann</h3>
-    <h4>This project provides information about the different causes of car crashes from 2012-present in different zip codes in New York City</h5>
+    .outline {
+      fill: none;
+      stroke: black;
+      stroke-width: 1px;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>NYC Car Crashes</h1>
+  <h3>CS 3300 Project 2: Simon Tian, Colin Wu, and Jeana Hoffmann</h3>
+  <h4>This project provides information about the different causes of car crashes from 2012-present in different zip
+    codes in New York City</h5>
     <h5>
       Click on a zip code to get information about car crashes in that location
     </h5>
@@ -392,7 +394,7 @@
         let zipcode = d3
           .select("svg#choropleth")
           .append("g")
-          .attr("transform", `translate(${50}, ${50})`);
+          .attr("transform", `translate(${50}, ${70})`);
 
         let zipsMap = {};
         zips.features.forEach(function (d, i) {
@@ -490,8 +492,59 @@
           plasma(0.75),
           plasma(1),
         ];
+        let legend = choropleth.append("g")
+          .attr("transform", `translate(${10}, ${10})`);
+
+
+
         crashExtent = d3.extent(crashData, d => d["CRASHES"]);
+        const legendScale = d3
+          .scaleLinear()
+          .domain(crashExtent)
+          .range([30, 300]);
+        const textScale = d3
+          .scaleLinear()
+          .domain(crashExtent)
+          .range([10, 300]);
         let colorScale = d3.scaleQuantile(colors).domain(crashExtent);
+        let bounds = [
+          crashExtent[0],
+          colorScale.quantiles()[0],
+          colorScale.quantiles()[1],
+          colorScale.quantiles()[2],
+          colorScale.quantiles()[3]
+        ]
+        legend.selectAll("rect")
+          .data(bounds)
+          .join("rect")
+          .attr("x", d => legendScale(d))
+          .attr("height", 30)
+          .attr("width", 40)
+          .style("fill", d => colorScale(d));
+
+        legend.selectAll("text")
+          .data(bounds.concat([crashExtent[1]]))
+          .join("text")
+          .text(d => Math.round(d))
+          .attr("x", d => textScale(d))
+          .attr('y', d => 50)
+          .style('font-size', "14")
+          .style("fill", "white");
+
+
+        // legend.append("text")
+        //   .text("1")
+        //   .style("fill", "white")
+        //   .attr("x", 31)
+        //   .attr("y", 25)
+        //   .style("font-size", "20px");
+        // d3.select("#legend")
+        //   .append("text")
+        //   .text(`${crashExtent[1]}`)
+        //   .style("fill", "white")
+        //   .attr("x", 195)
+        //   .attr("y", 25)
+        //   .style("font-size", "10px");
 
         let crashMap = {};
         crashData.forEach(function (d) {
@@ -591,5 +644,6 @@
 
       requestChoropleth();
     </script>
-  </body>
+</body>
+
 </html>
