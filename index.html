@@ -336,7 +336,7 @@
         .join("path")
         .attr("fill", d => colorScale(crashMap[d.properties["postalCode"]]))
         .attr("d", path)
-        .on("mouseover", mouseEntersZip)
+        .on("click", mouseEntersZip)
         .on("mouseout", mouseLeavesZip);
 
       map
@@ -415,11 +415,6 @@
       }
 
       function mouseLeavesZip() {
-        tooltip.style("visibility", "hidden");
-        let zip = d3.select(this);
-
-        momesh.attr("d", "");
-        factorChart.updateRadar();
         zipZoom.updateZip();
       }
     };
