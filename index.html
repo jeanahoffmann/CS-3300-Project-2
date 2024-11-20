@@ -38,6 +38,10 @@
       display: flex;
     }
 
+    h3 {
+      margin-bottom: 0px;
+    }
+
     .tooltip text {
       font-family: "Inter";
       font-size: 12;
@@ -54,12 +58,10 @@
 <body>
   <h1>NYC Car Crashes</h1>
   <h3>CS 3300 Project 2: Simon Tian, Colin Wu, and Jeana Hoffmann</h3>
+  <h5>Click on a zip code to get information about car crashes in that location<h5>
   <div id="dashboard">
     <svg id="choropleth" height="800" width="900"></svg>
     <svg id="spiderPlot" width="450" height="450"></svg>
-  </div>
-  <div>
-    <svg id="zipcode" width="300" height="300"></svg>
   </div>
 
   <ul id="legend"></ul>
